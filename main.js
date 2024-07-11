@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
-    width: 812,
-    height: 375,
+    width: window.innerWidth,
+    height: window.innerHeight,
     physics: {
         default: 'arcade',
         arcade: {
@@ -10,7 +10,8 @@ var config = {
     },
     scene: {
         preload: preload,
-        create: create
+        create: create,
+        update: update
     }
 };
 
@@ -20,13 +21,21 @@ function preload ()
 {
 
 }
+
 function create ()
 {
 
 }
 
-function update () {
-
-
+function update ()
+{
 
 }
+
+// Function to resize the game
+function resize() {
+    game.scale.resize(window.innerWidth, window.innerHeight);
+}
+
+// Add event listener for window resize
+window.addEventListener('resize', resize);
