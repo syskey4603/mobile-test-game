@@ -5,7 +5,6 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 200 }
         }
     },
     scene: {
@@ -20,10 +19,30 @@ var game = new Phaser.Game(config);
 function preload ()
 {
 
+    this.load.image('heartace', 'heartace.png');
+
 }
 
 function create ()
 {
+
+    hearace = this.physics.add.sprite(window.innerWidth/2, window.innerHeight/2, 'heartace')
+
+
+
+
+
+
+
+
+    // Enable touch input
+    this.input.on('pointerdown', function (pointer) {
+        console.log('Touch at: ' + pointer.x + ', ' + pointer.y);
+        // Add your touch handling logic here
+    }, this);
+
+
+
 
 }
 
