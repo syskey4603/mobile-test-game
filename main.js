@@ -26,7 +26,7 @@ function preload ()
 function create ()
 {
 
-    hearace = this.physics.add.sprite(window.innerWidth/2, window.innerHeight/2, 'heartace')
+    heartace = this.physics.add.sprite(window.innerWidth/2, window.innerHeight/2, 'heartace')
 
 
 
@@ -38,6 +38,7 @@ function create ()
     // Enable touch input
     this.input.on('pointerdown', function (pointer) {
         console.log('Touch at: ' + pointer.x + ', ' + pointer.y);
+        heartace.setPosition(300, 500);
         // Add your touch handling logic here
     }, this);
 
@@ -58,3 +59,4 @@ function resize() {
 
 // Add event listener for window resize
 window.addEventListener('resize', resize);
+indow.addEventListener('orientationchange', resize);
