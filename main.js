@@ -4,8 +4,7 @@ var config = {
     height: window.innerHeight,
     physics: {
         default: 'arcade',
-        arcade: {
-        }
+        arcade: {}
     },
     scene: {
         preload: preload,
@@ -15,40 +14,38 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+var heartace;
+var isDragging = false;
 
-function preload ()
-{
-
+function preload () {
     this.load.image('heartace', 'heartace.png');
-
 }
 
-function create ()
-{
-
-    heartace = this.physics.add.sprite(window.innerWidth/2, window.innerHeight/2, 'heartace')
-
-
-
-
-
-
-
+function create () {
+    heartace = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'heartace');
 
     // Enable touch input
     this.input.on('pointerdown', function (pointer) {
-        console.log('Touch at: ' + pointer.x + ', ' + pointer.y);
-        heartace.setPosition(300, 500);
-        // Add your touch handling logic here
+        if (pointer.x >= heartace.x - heartace.width / 2 &&
+            pointer.x <= heartace.x + heartace.width / 2 &&
+            pointer.y >= heartace.y - heartace.height / 2 &&
+            pointer.y <= heartace.y + heartace.height / 2) {
+            isDragging = true;
+        }
     }, this);
 
+    this.input.on('pointermove', function (pointer) {
+        if (isDragging) {
+            heartace.setPosition(pointer.x, pointer.y);
+        }
+    }, this);
 
-
-
+    this.input.on('pointerup', function () {
+        isDragging = false;
+    }, this);
 }
 
-function update ()
-{
+function update () {
 
 }
 
@@ -59,4 +56,4 @@ function resize() {
 
 // Add event listener for window resize
 window.addEventListener('resize', resize);
-indow.addEventListener('orientationchange', resize);
+window.addEventListener('orientationchange', resize);
