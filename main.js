@@ -45,6 +45,7 @@ function create () {
     }, this);
 }
 
+// Update function, currently empty
 function update () {
 
 }
@@ -52,8 +53,14 @@ function update () {
 // Function to resize the game
 function resize() {
     game.scale.resize(window.innerWidth, window.innerHeight);
+    game.scene.scenes[0].cameras.main.setSize(window.innerWidth, window.innerHeight);
+
+    // Reposition the heartace sprite to be centered in the new dimensions
+    if (heartace) {
+        heartace.setPosition(window.innerWidth / 2, window.innerHeight / 2);
+    }
 }
 
-// Add event listener for window resize
+// Add event listener for window resize and orientation change
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
