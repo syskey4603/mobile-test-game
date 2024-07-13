@@ -19,11 +19,24 @@ var isDragging = false;
 
 function preload () {
     this.load.image('heartace', 'heartace.png');
+    this.load.image('diamond2', 'diamond2.png');
+    this.load.image('diamond3', 'diamond3.png');
+    this.load.image('diamond4', 'diamond4.png');
+    this.load.image('diamond5', 'diamond5.png');
 }
 
 function create () {
     heartace = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'heartace');
+    diamond2 = this.physics.add.sprite(window.innerWidth/2, 800, 'diamond2').setInteractive();
 
+    diamond3 = this.physics.add.sprite(window.innerWidth/2-200, 80, 'diamond3');
+    diamond4 = this.physics.add.sprite(window.innerWidth/2-100, 80, 'diamond4');
+    diamond5 = this.physics.add.sprite(window.innerWidth/2, 80, 'diamond5');
+
+    
+    diamond2.on('pointerdown', () => {
+        console.log("diamond2 clicked")
+    })
     // Enable touch input
     this.input.on('pointerdown', function (pointer) {
         if (pointer.x >= heartace.x - heartace.width / 2 &&
