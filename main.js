@@ -38,7 +38,9 @@ function create () {
     diamond2.on('pointerdown', () => {
         console.log("diamond2 clicked")
         if(diamond3.active) {
-            diamond2.setPosition(diamond3.body.x+35, diamond3.body.y + 70)
+            diamond2.setDepth(1);
+            diamond3.setDepth(0);
+            diamond2.setPosition(diamond3.body.x+37, diamond3.body.y + 70)
         }
     })
     // Enable touch input
