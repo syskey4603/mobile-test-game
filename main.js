@@ -14,27 +14,109 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-var heartace;
-var isDragging = false;
+
+
+const DIAMOND = 1
+const HEART = 2
+const CLUB = 3
+const SPADE = 4
+
+class Card {
+constructor (rank, suit, open, positionx, positiony) {
+    this.rank = rank;
+    this.suit = suit;
+    this.open = open;
+    this.positionx = positionx;
+    this.positiony = positiony;
+    this.suitname = []
+    this.suitname[1] = "tiles"
+    this.suitname[2] = "heart"
+    this.suitname[3] = "clovers"
+    this.suitname[4] = "pikes"
+    this.rankanme = []
+    this.rankanme[1] = "A"
+    this.rankanme[2] = "2"
+    this.rankanme[3] = "3"
+    this.rankanme[4] = "4"
+    this.rankanme[5] = "5"
+    this.rankanme[6] = "6"
+    this.rankanme[7] = "7"
+    this.rankanme[8] = "8"
+    this.rankanme[9] = "9"
+    this.rankanme[10] = "10"
+    this.rankanme[11] = "J"
+    this.rankanme[12] = "Q"
+    this.rankanme[13] = "K"
+  }
+
+    getSpriteName() {
+        if(!this.open) {
+            return "assets/backofcard.png"
+        }
+        else {
+            return "assets/" + this.getSuitName() + "_" + this.getRankName() + ".png";
+        }
+    }
+
+    getSuitName() {
+        return this.suitname[this.suit];
+    }
+
+    getRankName() {
+        return this.rankanme[this.rank];
+    }
+
+}
+
+var talon = []
+var table = []
+var talonsprites = []
+var tablesprites = []
+var playedcards = []
+var playedcardssprites = []
+
+
+function initialSetup() {
+    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2, 800))
+    talon.push(new Card(8, HEART, false, window.innerWidth/2+100, 800))
+    talon.push(new Card(9, HEART, false, window.innerWidth/2+100, 800))
+    talon.push(new Card(10, HEART, false, window.innerWidth/2+100, 800))
+    table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80))
+    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80))
+    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80))
+}
 
 
 function preload () {
-    this.load.image('heartace', 'heartace.png');
-    this.load.image('diamond2', 'diamond2.png');
-    this.load.image('diamond3', 'diamond3.png');
-    this.load.image('diamond4', 'diamond4.png');
-    this.load.image('diamond5', 'diamond5.png');
+    initialSetup()
+    for (let i = 0; i < talon.length; i++) {
+        this.load.image(talon[i].getSpriteName(), talon[i].getSpriteName())
+        
+    }
+    for (i = 0; i < table.length; i++) {
+        this.load.image(table[i].getSpriteName(), table[i].getSpriteName())
+    }
+    for (i = 0; i < playedcards.length; i++) {
+        this.load.image(playedcards[i].getSpriteName(), playedcards[i].getSpriteName())
+    }
+
+
 }
 
-function create () {
-    heartace = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'heartace');
-    diamond2 = this.physics.add.sprite(window.innerWidth/2, 800, 'diamond2').setInteractive();
+    function create () {
+    for (let i = 0; i < talon.length; i++) {
+        talonsprites.push(this.physics.add.sprite(talon[i].positionx, talon[i].positiony, talon[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+        
+    }
+    for (i = 0; i < table.length; i++) {
+        tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+    }
+    for (i = 0; i < playedcards.length; i++) {
+        playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+    }
 
-    diamond3 = this.physics.add.sprite(window.innerWidth/2-200, 80, 'diamond3');
-    diamond4 = this.physics.add.sprite(window.innerWidth/2-100, 80, 'diamond4');
-    diamond5 = this.physics.add.sprite(window.innerWidth/2, 80, 'diamond5');
-
-
+    }
+/*
     diamond2.on('pointerdown', () => {
         console.log("diamond2 clicked")
         if(diamond3.active) {
@@ -43,27 +125,7 @@ function create () {
             diamond2.setPosition(diamond3.body.x+37, diamond3.body.y + 70)
         }
     })
-    // Enable touch input
-    this.input.on('pointerdown', function (pointer) {
-        if (pointer.x >= heartace.x - heartace.width / 2 &&
-            pointer.x <= heartace.x + heartace.width / 2 &&
-            pointer.y >= heartace.y - heartace.height / 2 &&
-            pointer.y <= heartace.y + heartace.height / 2) {
-            isDragging = true;
-        }
-    }, this);
-
-    this.input.on('pointermove', function (pointer) {
-        if (isDragging) {
-            heartace.setPosition(pointer.x, pointer.y);
-        }
-    }, this);
-
-    this.input.on('pointerup', function () {
-        isDragging = false;
-    }, this);
-}
-
+    */
 // Update function, currently empty
 function update () {
 
@@ -75,9 +137,7 @@ function resize() {
     game.scene.scenes[0].cameras.main.setSize(window.innerWidth, window.innerHeight);
 
     // Reposition the heartace sprite to be centered in the new dimensions
-    if (heartace) {
-        heartace.setPosition(window.innerWidth / 2, window.innerHeight / 2);
-    }
+
 }
 
 // Add event listener for window resize and orientation change
