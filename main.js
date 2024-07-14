@@ -77,10 +77,10 @@ var playedcardssprites = []
 
 
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2, 800))
-    talon.push(new Card(8, HEART, false, window.innerWidth/2+100, 800))
-    talon.push(new Card(9, HEART, false, window.innerWidth/2+100, 800))
-    talon.push(new Card(10, HEART, false, window.innerWidth/2+100, 800))
+    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 800))
+    talon.push(new Card(8, HEART, false, window.innerWidth/2, 800))
+    talon.push(new Card(9, HEART, false, window.innerWidth/2, 800))
+    talon.push(new Card(10, HEART, false, window.innerWidth/2, 800))
     table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80))
     table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80))
     table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80))
@@ -104,18 +104,46 @@ function preload () {
 }
 
     function create () {
-    for (let i = 0; i < talon.length; i++) {
-        talonsprites.push(this.physics.add.sprite(talon[i].positionx, talon[i].positiony, talon[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
-        
-    }
-    for (i = 0; i < table.length; i++) {
-        tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
-    }
-    for (i = 0; i < playedcards.length; i++) {
-        playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
-    }
+        for (let i = 0; i < talon.length; i++) {
+            talonsprites.push(this.physics.add.sprite(talon[i].positionx, talon[i].positiony, talon[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+            
+        }
+        for (i = 0; i < table.length; i++) {
+            tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+        }
+        for (i = 0; i < playedcards.length; i++) {
+            playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+        }
+
+        for (i = 0; i < tablesprites.length; i++) {
+            tablesprites[i].on('pointerdown', tablespritehandlerfunc.bind(false, i, table))
+        }
+        for (i = 0; i < talonsprites.length; i++) {
+            talonsprites[i].on('pointerdown', talonspritehandlerfunc.bind(false, i, talon))
+        }
+        for (i = 0; i < playedcardssprites.length; i++) {
+            playedcardssprites[i].on('pointerdown', playedspritehandlerfunc.bind(false, i, playedcards))
+        }
 
     }
+
+    const tablespritehandlerfunc = function (j, table) {
+        console.log("table: " + j.toString())
+        console.log(table[j].getSpriteName())
+    }
+
+    const talonspritehandlerfunc = function (j, talon) {
+        console.log("talon: " + j.toString())
+        console.log(talon[j].getSpriteName())
+    }
+    
+    const playedspritehandlerfunc = function (j, playedcards) {
+        console.log("playedcard: " + j.toString())
+        console.log(playedcards[j].getSpriteName())
+    }
+
+    
+
 /*
     diamond2.on('pointerdown', () => {
         console.log("diamond2 clicked")
