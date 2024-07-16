@@ -119,7 +119,7 @@ function preload () {
             tablesprites[i].on('pointerdown', tablespritehandlerfunc.bind(false, i, table))
         }
         for (i = 0; i < talonsprites.length; i++) {
-            talonsprites[i].on('pointerdown', talonspritehandlerfunc.bind(false, i, talon))
+            talonsprites[i].on('pointerdown', talonspritehandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites))
         }
         for (i = 0; i < playedcardssprites.length; i++) {
             playedcardssprites[i].on('pointerdown', playedspritehandlerfunc.bind(false, i, playedcards))
@@ -130,11 +130,22 @@ function preload () {
     const tablespritehandlerfunc = function (j, table) {
         console.log("table: " + j.toString())
         console.log(table[j].getSpriteName())
+
     }
 
-    const talonspritehandlerfunc = function (j, talon) {
+    const talonspritehandlerfunc = function (j, talon, playedcards, playedcardssprites, talonsprites) {
         console.log("talon: " + j.toString())
         console.log(talon[j].getSpriteName())
+        playedcards.push(talon[j])
+        playedcards[playedcards.length-1].open = true;
+        playedcards[playedcards.length-1].positionx = talon[j].positionx
+        playedcards[playedcards.length-1].positiony = talon[j].positiony
+        talon.pop(talon[j])
+        playedcardssprites.push(talonsprites[talonsprites.length-1])
+        playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
+        talonsprites.pop(talonsprites[talonsprites.length-1])
+        console.log(playedcards[playedcards.length-1])
+        console.log(playedcardssprites[playedcardssprites.length-1])
     }
     
     const playedspritehandlerfunc = function (j, playedcards) {
@@ -144,17 +155,7 @@ function preload () {
 
     
 
-/*
-    diamond2.on('pointerdown', () => {
-        console.log("diamond2 clicked")
-        if(diamond3.active) {
-            diamond2.setDepth(1);
-            diamond3.setDepth(0);
-            diamond2.setPosition(diamond3.body.x+37, diamond3.body.y + 70)
-        }
-    })
-    */
-// Update function, currently empty
+
 function update () {
 
 }
@@ -171,3 +172,6 @@ function resize() {
 // Add event listener for window resize and orientation change
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
+
+//add cards from talon to played until empty
+// 
