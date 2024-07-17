@@ -30,7 +30,7 @@ constructor (rank, suit, open, positionx, positiony) {
     this.positiony = positiony;
     this.suitname = []
     this.suitname[1] = "tiles"
-    this.suitname[2] = "heart"
+    this.suitname[2] = "hearts"
     this.suitname[3] = "clovers"
     this.suitname[4] = "pikes"
     this.rankanme = []
@@ -70,9 +70,10 @@ constructor (rank, suit, open, positionx, positiony) {
 
 var talon = []
 var table = []
+var playedcards = []
+
 var talonsprites = []
 var tablesprites = []
-var playedcards = []
 var playedcardssprites = []
 
 
@@ -89,6 +90,7 @@ function initialSetup() {
 
 function preload () {
     initialSetup()
+    /*
     for (let i = 0; i < talon.length; i++) {
         this.load.image(talon[i].getSpriteName(), talon[i].getSpriteName())
         
@@ -99,8 +101,21 @@ function preload () {
     for (i = 0; i < playedcards.length; i++) {
         this.load.image(playedcards[i].getSpriteName(), playedcards[i].getSpriteName())
     }
+    */
+
+    c = new Card(1, DIAMOND, true, 1, 1);
+
+    for(let j = 0; j < 4; j++) {
+
+        for(i = 0; i < 13; i++) {
+
+            this.load.image("assets/" + c.suitname[j+1] + "_" + c.rankanme[i+1] + ".png", "assets/" + c.suitname[j+1] + "_" + c.rankanme[i+1] + ".png")
+        }
 
 
+    }
+
+    this.load.image("assets/backofcard.png", "assets/backofcard.png")
 }
 
     function create () {
@@ -138,14 +153,16 @@ function preload () {
         console.log(talon[j].getSpriteName())
         playedcards.push(talon[j])
         playedcards[playedcards.length-1].open = true;
-        playedcards[playedcards.length-1].positionx = talon[j].positionx
-        playedcards[playedcards.length-1].positiony = talon[j].positiony
+        playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
+        playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
         talon.pop(talon[j])
         playedcardssprites.push(talonsprites[talonsprites.length-1])
+        playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
+        console.log(playedcards[playedcards.length-1].getSpriteName())
+        playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
         playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
         talonsprites.pop(talonsprites[talonsprites.length-1])
-        console.log(playedcards[playedcards.length-1])
-        console.log(playedcardssprites[playedcardssprites.length-1])
+
     }
     
     const playedspritehandlerfunc = function (j, playedcards) {
@@ -173,5 +190,5 @@ function resize() {
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
 
-//add cards from talon to played until empty
-// 
+//all cards should have unique id one function for all that checks which card it is based on the id
+// run the switch basis the card 
