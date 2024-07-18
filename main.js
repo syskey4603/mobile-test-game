@@ -22,7 +22,8 @@ const CLUB = 3
 const SPADE = 4
 
 class Card {
-constructor (rank, suit, open, positionx, positiony) {
+constructor (rank, suit, open, positionx, positiony, id) {
+    this.id = id;
     this.rank = rank;
     this.suit = suit;
     this.open = open;
@@ -76,15 +77,19 @@ var talonsprites = []
 var tablesprites = []
 var playedcardssprites = []
 
+var talonids = []
+var tableids = []
+var playedcardids = []
 
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 800))
-    talon.push(new Card(8, HEART, false, window.innerWidth/2, 800))
-    talon.push(new Card(9, HEART, false, window.innerWidth/2, 800))
-    talon.push(new Card(10, HEART, false, window.innerWidth/2, 800))
-    table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80))
-    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80))
-    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80))
+    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 800, 1))
+    talon.push(new Card(8, HEART, false, window.innerWidth/2, 800, 2))
+    talon.push(new Card(9, HEART, false, window.innerWidth/2, 800, 3))
+    talon.push(new Card(10, HEART, false, window.innerWidth/2, 800, 4))
+    table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
+    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
+    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
+    
 }
 
 
@@ -121,55 +126,78 @@ function preload () {
     function create () {
         for (let i = 0; i < talon.length; i++) {
             talonsprites.push(this.physics.add.sprite(talon[i].positionx, talon[i].positiony, talon[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+            talonids.push(talon[i].id)
             
         }
         for (i = 0; i < table.length; i++) {
             tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+            tableids.push(table[i].id)
         }
         for (i = 0; i < playedcards.length; i++) {
             playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+            playedcardids.push(playedcards[i].id)
         }
 
         for (i = 0; i < tablesprites.length; i++) {
-            tablesprites[i].on('pointerdown', tablespritehandlerfunc.bind(false, i, table))
+            tablesprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
         }
         for (i = 0; i < talonsprites.length; i++) {
-            talonsprites[i].on('pointerdown', talonspritehandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites))
+            talonsprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
         }
         for (i = 0; i < playedcardssprites.length; i++) {
-            playedcardssprites[i].on('pointerdown', playedspritehandlerfunc.bind(false, i, playedcards))
+            playedcardssprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
         }
 
     }
 
+    /*
     const tablespritehandlerfunc = function (j, table) {
         console.log("table: " + j.toString())
         console.log(table[j].getSpriteName())
 
     }
+*/
+    const cardhandlerfunc = function (j, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids) {
+        for(let m = 0; m < playedcardids.length; m++) {
+            if(playedcards[m].id == playedcardids[m]) {
+                console.log("playedcards clicked")
 
-    const talonspritehandlerfunc = function (j, talon, playedcards, playedcardssprites, talonsprites) {
-        console.log("talon: " + j.toString())
-        console.log(talon[j].getSpriteName())
-        playedcards.push(talon[j])
-        playedcards[playedcards.length-1].open = true;
-        playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
-        playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
-        talon.pop(talon[j])
-        playedcardssprites.push(talonsprites[talonsprites.length-1])
-        playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
-        console.log(playedcards[playedcards.length-1].getSpriteName())
-        playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
-        playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
-        talonsprites.pop(talonsprites[talonsprites.length-1])
+            }
+        }
+        for(m = 0; m < talonids.length; m++) {
+            if(talon[m].id == talonids[m]) {
+                console.log("talon clicked")
+                console.log("talon: " + j.toString())
+                console.log(talon[j].getSpriteName())
+                playedcards.push(talon[j])
+                playedcards[playedcards.length-1].open = true;
+                playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
+                playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
+                talon.pop(talon[j])
+                playedcardssprites.push(talonsprites[talonsprites.length-1])
+                playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
+                console.log(playedcards[playedcards.length-1].getSpriteName())
+                playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
+                playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
+                talonsprites.pop(talonsprites[talonsprites.length-1])
+
+            }
+        }
+        for(m = 0; m < tableids.length; m++) {
+            if(table[m].id == tableids[m]) {
+                console.log("table clicked")
+
+            }
+        }
+
 
     }
-    
+    /*
     const playedspritehandlerfunc = function (j, playedcards) {
         console.log("playedcard: " + j.toString())
         console.log(playedcards[j].getSpriteName())
     }
-
+*/
     
 
 
