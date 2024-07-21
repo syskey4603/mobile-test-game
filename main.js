@@ -67,6 +67,14 @@ constructor (rank, suit, open, positionx, positiony, id) {
         return this.rankanme[this.rank];
     }
 
+    isNextCard(checkRank) {
+        if(this.rank-1 == checkRank || this.rank+1 == checkRank || (this.rank == 13 && checkRank == 1) || (this.rank == 1 && checkRank == 13)) {
+            return true;
+        }
+        return false;
+
+    }
+
 }
 
 var talon = []
@@ -87,8 +95,8 @@ function initialSetup() {
     talon.push(new Card(9, HEART, false, window.innerWidth/2, 800, 3))
     talon.push(new Card(10, HEART, false, window.innerWidth/2, 800, 4))
     table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
-    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
-    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
+    table.push(new Card(13, DIAMOND, true, window.innerWidth/2-100, 80, 6))
+    table.push(new Card(1, DIAMOND, true, window.innerWidth/2, 80, 7))
     
 }
 
@@ -139,13 +147,13 @@ function preload () {
         }
 
         for (i = 0; i < tablesprites.length; i++) {
-            tablesprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
+            tablesprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, table[i].id))
         }
         for (i = 0; i < talonsprites.length; i++) {
-            talonsprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
+            talonsprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, talon[i].id))
         }
         for (i = 0; i < playedcardssprites.length; i++) {
-            playedcardssprites[i].on('pointerdown', cardhandlerfunc.bind(false, i, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids))
+            playedcardssprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, playedcards[i].id))
         }
 
     }
@@ -157,40 +165,64 @@ function preload () {
 
     }
 */
-    const cardhandlerfunc = function (j, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids) {
-        for(let m = 0; m < playedcardids.length; m++) {
-            if(playedcards[m].id == playedcardids[m]) {
-                console.log("playedcards clicked")
-
-            }
+    const cardhandlerfunc = function (talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, cardid) {
+        var playedCardIndex = getcardindex(playedcards, cardid)
+        if(playedCardIndex != -1) {
+            console.log("playedcards clicked")
+            return
         }
-        for(m = 0; m < talonids.length; m++) {
-            if(talon[m].id == talonids[m]) {
-                console.log("talon clicked")
-                console.log("talon: " + j.toString())
-                console.log(talon[j].getSpriteName())
-                playedcards.push(talon[j])
-                playedcards[playedcards.length-1].open = true;
+
+        var talonCardIndex = getcardindex(talon, cardid)
+
+        if(talonCardIndex != -1) {
+            playedcards.push(talon[talonCardIndex])
+            playedcards[playedcards.length-1].open = true;
+            playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
+            playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
+            talon.pop()
+            playedcardssprites.push(talonsprites[talonsprites.length-1])
+            playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
+            playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
+            playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
+            talonsprites.pop()
+            return
+
+        }
+
+        var tableCardIndex = getcardindex(table, cardid)
+        if(tableCardIndex != -1) {
+            if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
+                console.log("match")
+                playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
                 playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
-                talon.pop(talon[j])
-                playedcardssprites.push(talonsprites[talonsprites.length-1])
+                table.splice(tableCardIndex, 1)
+                playedcardssprites.push(tablesprites[tableCardIndex])
                 playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
-                console.log(playedcards[playedcards.length-1].getSpriteName())
-                playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
                 playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
-                talonsprites.pop(talonsprites[talonsprites.length-1])
+                tablesprites.splice(tableCardIndex, 1)
+                return
 
             }
-        }
-        for(m = 0; m < tableids.length; m++) {
-            if(table[m].id == tableids[m]) {
-                console.log("table clicked")
-
+            else {
+                console.log("no match")
             }
         }
 
+        console.log("not found in any list " + cardid.toString())
 
+
+    }
+
+
+    function getcardindex(list, id) {
+        for(let i = 0; i < list.length; i++) {
+            if(list[i].id == id) {
+                return i;
+            }
+
+        }
+        return -1
     }
     /*
     const playedspritehandlerfunc = function (j, playedcards) {
