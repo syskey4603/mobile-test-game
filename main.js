@@ -95,8 +95,8 @@ function initialSetup() {
     talon.push(new Card(9, HEART, false, window.innerWidth/2, 800, 3))
     talon.push(new Card(10, HEART, false, window.innerWidth/2, 800, 4))
     table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
-    table.push(new Card(13, DIAMOND, true, window.innerWidth/2-100, 80, 6))
-    table.push(new Card(1, DIAMOND, true, window.innerWidth/2, 80, 7))
+    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
+    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
     
 }
 
@@ -169,7 +169,6 @@ function preload () {
         var playedCardIndex = getcardindex(playedcards, cardid)
         if(playedCardIndex != -1) {
             console.log("playedcards clicked")
-            return
         }
 
         var talonCardIndex = getcardindex(talon, cardid)
@@ -185,7 +184,6 @@ function preload () {
             playedcardssprites[playedcardssprites.length-1].setTexture(playedcards[playedcards.length-1].getSpriteName()).setScale(0.3, 0.3)
             playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
             talonsprites.pop()
-            return
 
         }
 
@@ -201,7 +199,6 @@ function preload () {
                 playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
                 playedcardssprites[playedcardssprites.length-1].setPosition(playedcards[playedcards.length-1].positionx, playedcards[playedcards.length-1].positiony)
                 tablesprites.splice(tableCardIndex, 1)
-                return
 
             }
             else {
@@ -210,6 +207,7 @@ function preload () {
         }
 
         console.log("not found in any list " + cardid.toString())
+        checkGameOver()
 
 
     }
@@ -231,7 +229,21 @@ function preload () {
     }
 */
     
+function checkGameOver() {
+    if(table.length == 0) {
+        console.log("game won")
+    }
+    if(talon.length == 0) {
+        for(let i = 0; i < table.length; i++) {
+            if(!table[i].isNextCard(playedcards[playedcards.length-1].rank)) {
+                console.log("game lost")
 
+
+        }
+    }
+
+}
+}
 
 function update () {
 
@@ -250,5 +262,5 @@ function resize() {
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
 
-//all cards should have unique id one function for all that checks which card it is based on the id
-// run the switch basis the card 
+// if table empty do game won
+// if talon is empty and no matching card on the table game lost
