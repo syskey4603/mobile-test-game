@@ -89,11 +89,14 @@ var talonids = []
 var tableids = []
 var playedcardids = []
 
+
+var gameWonText
+
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 800, 1))
-    talon.push(new Card(8, HEART, false, window.innerWidth/2, 800, 2))
-    talon.push(new Card(9, HEART, false, window.innerWidth/2, 800, 3))
-    talon.push(new Card(10, HEART, false, window.innerWidth/2, 800, 4))
+    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 400, 1))
+    talon.push(new Card(8, HEART, false, window.innerWidth/2, 400, 2))
+    talon.push(new Card(9, HEART, false, window.innerWidth/2, 400, 3))
+    talon.push(new Card(10, HEART, false, window.innerWidth/2, 400, 4))
     table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
     table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
     table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
@@ -132,6 +135,11 @@ function preload () {
 }
 
     function create () {
+        let textStyle = { font: '96px Arial', fill: '#FFFFFF' };
+        gameWonText = this.add.text(window.innerWidth / 2, window.innerHeight / 2, 'You Win!', textStyle);
+        gameWonText.visible = false;
+        gameLostText = this.add.text(window.innerWidth/2, window.innerHeight/2, 'You Lose!', textStyle);
+        gameLostText.visible = false;
         for (let i = 0; i < talon.length; i++) {
             talonsprites.push(this.physics.add.sprite(talon[i].positionx, talon[i].positiony, talon[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
             talonids.push(talon[i].id)
@@ -158,13 +166,7 @@ function preload () {
 
     }
 
-    /*
-    const tablespritehandlerfunc = function (j, table) {
-        console.log("table: " + j.toString())
-        console.log(table[j].getSpriteName())
-
-    }
-*/
+    
     const cardhandlerfunc = function (talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, cardid) {
         var playedCardIndex = getcardindex(playedcards, cardid)
         if(playedCardIndex != -1) {
@@ -190,7 +192,6 @@ function preload () {
         var tableCardIndex = getcardindex(table, cardid)
         if(tableCardIndex != -1) {
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
-                console.log("match")
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
                 playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
@@ -222,21 +223,33 @@ function preload () {
         }
         return -1
     }
-    /*
-    const playedspritehandlerfunc = function (j, playedcards) {
-        console.log("playedcard: " + j.toString())
-        console.log(playedcards[j].getSpriteName())
-    }
-*/
     
 function checkGameOver() {
     if(table.length == 0) {
         console.log("game won")
+        gameWonText.visible = true;
+        for(let i = 0; i < talonsprites.length; i++) {
+            talonsprites[i].disableBody(true, true)
+
+        }
+        for(i = 0; i < playedcardssprites.length; i++) {
+            playedcardssprites[i].disableBody(true, true)
+        }
+        game.scene.pause()
     }
     if(talon.length == 0) {
         for(let i = 0; i < table.length; i++) {
             if(!table[i].isNextCard(playedcards[playedcards.length-1].rank)) {
                 console.log("game lost")
+                gameLostText.visible = true;
+                for(let m = 0; m < playedcardssprites.length; m++) {
+                    playedcardssprites[m].disableBody(true, true)
+                }
+                for(m = 0; m < tablesprites.length; m++) {
+                    tablesprites[m].disableBody(true, true)
+                }
+
+
 
 
         }
@@ -249,18 +262,12 @@ function update () {
 
 }
 
-// Function to resize the game
 function resize() {
     game.scale.resize(window.innerWidth, window.innerHeight);
     game.scene.scenes[0].cameras.main.setSize(window.innerWidth, window.innerHeight);
 
-    // Reposition the heartace sprite to be centered in the new dimensions
 
 }
 
-// Add event listener for window resize and orientation change
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
-
-// if table empty do game won
-// if talon is empty and no matching card on the table game lost
