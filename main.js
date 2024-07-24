@@ -21,6 +21,26 @@ const HEART = 2
 const CLUB = 3
 const SPADE = 4
 
+var suitname = []
+suitname[1] = "tiles"
+suitname[2] = "hearts"
+suitname[3] = "clovers"
+suitname[4] = "pikes"
+var rankanme = []
+rankanme[1] = "A"
+rankanme[2] = "2"
+rankanme[3] = "3"   
+rankanme[4] = "4"
+rankanme[5] = "5"
+rankanme[6] = "6"
+rankanme[7] = "7"
+rankanme[8] = "8"
+rankanme[9] = "9"
+rankanme[10] = "10"
+rankanme[11] = "J"
+rankanme[12] = "Q"
+rankanme[13] = "K"
+
 class Card {
 constructor (rank, suit, open, positionx, positiony, id) {
     this.id = id;
@@ -29,25 +49,7 @@ constructor (rank, suit, open, positionx, positiony, id) {
     this.open = open;
     this.positionx = positionx;
     this.positiony = positiony;
-    this.suitname = []
-    this.suitname[1] = "tiles"
-    this.suitname[2] = "hearts"
-    this.suitname[3] = "clovers"
-    this.suitname[4] = "pikes"
-    this.rankanme = []
-    this.rankanme[1] = "A"
-    this.rankanme[2] = "2"
-    this.rankanme[3] = "3"
-    this.rankanme[4] = "4"
-    this.rankanme[5] = "5"
-    this.rankanme[6] = "6"
-    this.rankanme[7] = "7"
-    this.rankanme[8] = "8"
-    this.rankanme[9] = "9"
-    this.rankanme[10] = "10"
-    this.rankanme[11] = "J"
-    this.rankanme[12] = "Q"
-    this.rankanme[13] = "K"
+
   }
 
     getSpriteName() {
@@ -60,11 +62,11 @@ constructor (rank, suit, open, positionx, positiony, id) {
     }
 
     getSuitName() {
-        return this.suitname[this.suit];
+        return suitname[this.suit];
     }
 
     getRankName() {
-        return this.rankanme[this.rank];
+        return rankanme[this.rank];
     }
 
     isNextCard(checkRank) {
@@ -100,6 +102,10 @@ function initialSetup() {
     table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
     table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
     table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
+    table.push(new Card(6, DIAMOND, false, window.innerWidth/2, 80, 7))
+    table.push(new Card(7, DIAMOND, false, window.innerWidth/2, 80, 7))
+
+
     
 }
 
@@ -125,7 +131,7 @@ function preload () {
 
         for(i = 0; i < 13; i++) {
 
-            this.load.image("assets/" + c.suitname[j+1] + "_" + c.rankanme[i+1] + ".png", "assets/" + c.suitname[j+1] + "_" + c.rankanme[i+1] + ".png")
+            this.load.image("assets/" + suitname[j+1] + "_" + rankanme[i+1] + ".png", "assets/" + suitname[j+1] + "_" + rankanme[i+1] + ".png")
         }
 
 
@@ -147,7 +153,12 @@ function preload () {
         }
         for (i = 0; i < table.length; i++) {
             tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+            tablesprites[i].setDepth(5)
+            if(table[i].open == false) {
+                tablesprites[i].setDepth(1)
+            }
             tableids.push(table[i].id)
+
         }
         for (i = 0; i < playedcards.length; i++) {
             playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
@@ -191,6 +202,11 @@ function preload () {
 
         var tableCardIndex = getcardindex(table, cardid)
         if(tableCardIndex != -1) {
+            if(table[tableCardIndex+1].open == false) {
+                console.log("test")
+                table[tableCardIndex+1].open = true
+                tablesprites[tableCardIndex+1].setTexture(table[tableCardIndex+1].getSpriteName())
+            }
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
@@ -207,8 +223,7 @@ function preload () {
             }
         }
 
-        console.log("not found in any list " + cardid.toString())
-        checkGameOver()
+        //checkGameOver()
 
 
     }
@@ -223,7 +238,8 @@ function preload () {
         }
         return -1
     }
-    
+
+/*
 function checkGameOver() {
     if(table.length == 0) {
         console.log("game won")
@@ -257,7 +273,7 @@ function checkGameOver() {
 
 }
 }
-
+*/
 function update () {
 
 }
