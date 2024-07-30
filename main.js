@@ -1,10 +1,34 @@
+const MAX_SIZE_WIDTH_SCREEN = 1920
+const MAX_SIZE_HEIGHT_SCREEN = 1080
+const MIN_SIZE_WIDTH_SCREEN = 270
+const MIN_SIZE_HEIGHT_SCREEN = 480
+const SIZE_WIDTH_SCREEN = 932
+const SIZE_HEIGHT_SCREEN = 430
+
+
+fetch('test.json')
+    .then((response) => response.json())
+    .then((json) => console.log(json));
 var config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+
     physics: {
         default: 'arcade',
         arcade: {}
+    },
+    scale: {
+        mode: Phaser.Scale.FIT,
+        parent: 'game',
+        width: SIZE_WIDTH_SCREEN,
+        height: SIZE_HEIGHT_SCREEN,
+        min: {
+            width: MIN_SIZE_WIDTH_SCREEN,
+            height: MIN_SIZE_HEIGHT_SCREEN
+        },
+        max: {
+            width: MAX_SIZE_WIDTH_SCREEN,
+            height: MAX_SIZE_HEIGHT_SCREEN
+        }
     },
     scene: {
         preload: preload,
@@ -13,8 +37,17 @@ var config = {
     }
 };
 
-var game = new Phaser.Game(config);
 
+
+var game = new Phaser.Game(config);
+game.screenBaseSize = {
+    maxWidth: MAX_SIZE_WIDTH_SCREEN,
+    maxHeight: MAX_SIZE_HEIGHT_SCREEN,
+    minWidth: MIN_SIZE_WIDTH_SCREEN,
+    minHeight: MIN_SIZE_HEIGHT_SCREEN,
+    width: SIZE_WIDTH_SCREEN,
+    height: SIZE_HEIGHT_SCREEN
+}
 
 const DIAMOND = 1
 const HEART = 2
@@ -40,7 +73,7 @@ rankanme[10] = "10"
 rankanme[11] = "J"
 rankanme[12] = "Q"
 rankanme[13] = "K"
-
+//create level class and load the json
 class Card {
 constructor (rank, suit, open, positionx, positiony, id) {
     this.id = id;
@@ -95,18 +128,22 @@ var playedcardids = []
 var gameWonText
 
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+100, 400, 1))
+    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+150, 400, 1))
     talon.push(new Card(8, HEART, false, window.innerWidth/2, 400, 2))
-    talon.push(new Card(9, HEART, false, window.innerWidth/2, 400, 3))
-    talon.push(new Card(10, HEART, false, window.innerWidth/2, 400, 4))
-    table.push(new Card(3, DIAMOND, true, window.innerWidth/2-200, 80, 5))
-    table.push(new Card(4, DIAMOND, true, window.innerWidth/2-100, 80, 6))
-    table.push(new Card(5, DIAMOND, true, window.innerWidth/2, 80, 7))
-    table.push(new Card(6, DIAMOND, false, window.innerWidth/2, 80, 7))
-    table.push(new Card(7, DIAMOND, false, window.innerWidth/2, 80, 7))
+    talon.push(new Card(9, HEART, false, window.innerWidth/2+10, 400, 3))
+    talon.push(new Card(10, HEART, false, window.innerWidth/2+20, 400, 4))
+    table.push(new Card(3, DIAMOND, true, 400, 80, 5))
+    table.push(new Card(4, DIAMOND, true, 300, 80, 6))
+    table.push(new Card(5, DIAMOND, true, 500, 80, 7))
+    table.push(new Card(6, DIAMOND, false, 520, 80, 8))
+    table.push(new Card(7, DIAMOND, false, 510, 80, 9))
 
 
     
+}
+
+function randomTalon() {
+
 }
 
 
@@ -138,9 +175,12 @@ function preload () {
     }
 
     this.load.image("assets/backofcard.png", "assets/backofcard.png")
+    this.load.image("background", "Level Assets/BonusLevel_BG/BG.png")
+
 }
 
     function create () {
+        this.add.image(400, 300, 'background').setScale(0.5, 0.5);
         let textStyle = { font: '96px Arial', fill: '#FFFFFF' };
         gameWonText = this.add.text(window.innerWidth / 2, window.innerHeight / 2, 'You Win!', textStyle);
         gameWonText.visible = false;
@@ -153,10 +193,12 @@ function preload () {
         }
         for (i = 0; i < table.length; i++) {
             tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
-            tablesprites[i].setDepth(5)
-            if(table[i].open == false) {
-                tablesprites[i].setDepth(1)
+
+            if(table[i].open) {
+                tablesprites[i].setDepth(5555)
             }
+                
+            
             tableids.push(table[i].id)
 
         }
@@ -202,11 +244,7 @@ function preload () {
 
         var tableCardIndex = getcardindex(table, cardid)
         if(tableCardIndex != -1) {
-            if(table[tableCardIndex+1].open == false) {
-                console.log("test")
-                table[tableCardIndex+1].open = true
-                tablesprites[tableCardIndex+1].setTexture(table[tableCardIndex+1].getSpriteName())
-            }
+           
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
@@ -218,9 +256,19 @@ function preload () {
                 tablesprites.splice(tableCardIndex, 1)
 
             }
+
+            if(!table[tableCardIndex].open) {
+                console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
+                table[tableCardIndex].open = true;
+                console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
+                console.log(table[tableCardIndex].getSpriteName())
+                tablesprites[tableCardIndex].setTexture(table[tableCardIndex].getSpriteName()).setScale(0.3, 0.3);
+                tablesprites[tableCardIndex].setDepth(5555)
+
+            }
             else {
                 console.log("no match")
-            }
+        }
         }
 
         //checkGameOver()
@@ -278,6 +326,7 @@ function update () {
 
 }
 
+/*
 function resize() {
     game.scale.resize(window.innerWidth, window.innerHeight);
     game.scene.scenes[0].cameras.main.setSize(window.innerWidth, window.innerHeight);
@@ -287,3 +336,4 @@ function resize() {
 
 window.addEventListener('resize', resize);
 window.addEventListener('orientationchange', resize);
+*/  
