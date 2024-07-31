@@ -4,11 +4,33 @@ const MIN_SIZE_WIDTH_SCREEN = 270
 const MIN_SIZE_HEIGHT_SCREEN = 480
 const SIZE_WIDTH_SCREEN = 932
 const SIZE_HEIGHT_SCREEN = 430
+var globalData;
+var gameLostText;
+var i;
+var j;
+var m;
+var n;
+
+async function fetchData() {
+    try {
+        const response = await fetch('test.json');
+        const json = await response.json();
+        globalData = json;
+        console.log(globalData)
+    } catch (error) {
+        console.error('Error fetching JSON:', error);
+    }
+}
 
 
-fetch('test.json')
-    .then((response) => response.json())
-    .then((json) => console.log(json));
+function splitPosVals(vals) {
+    return vals.split(',').map(val => Number(val.trim()));
+
+}
+
+await fetchData()
+console.log(splitPosVals(globalData["table"]["data"]["CardPosition"][0]))
+
 var config = {
     type: Phaser.AUTO,
 
@@ -124,14 +146,15 @@ var talonids = []
 var tableids = []
 var playedcardids = []
 
+var c;
 
 var gameWonText
 
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, window.innerWidth/2+150, 400, 1))
-    talon.push(new Card(8, HEART, false, window.innerWidth/2, 400, 2))
-    talon.push(new Card(9, HEART, false, window.innerWidth/2+10, 400, 3))
-    talon.push(new Card(10, HEART, false, window.innerWidth/2+20, 400, 4))
+    playedcards.push(new Card(2, DIAMOND, true, 550, 300, 1))
+    talon.push(new Card(8, HEART, false, 410, 300, 2))
+    talon.push(new Card(9, HEART, false, 420, 300, 3))
+    talon.push(new Card(10, HEART, false, 430, 300, 4))
     table.push(new Card(3, DIAMOND, true, 400, 80, 5))
     table.push(new Card(4, DIAMOND, true, 300, 80, 6))
     table.push(new Card(5, DIAMOND, true, 500, 80, 7))
@@ -166,7 +189,7 @@ function preload () {
 
     for(let j = 0; j < 4; j++) {
 
-        for(i = 0; i < 13; i++) {
+        for(let i = 0; i < 13; i++) {
 
             this.load.image("assets/" + suitname[j+1] + "_" + rankanme[i+1] + ".png", "assets/" + suitname[j+1] + "_" + rankanme[i+1] + ".png")
         }
@@ -191,7 +214,7 @@ function preload () {
             talonids.push(talon[i].id)
             
         }
-        for (i = 0; i < table.length; i++) {
+        for (let i = 0; i < table.length; i++) {
             tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
 
             if(table[i].open) {
@@ -202,7 +225,7 @@ function preload () {
             tableids.push(table[i].id)
 
         }
-        for (i = 0; i < playedcards.length; i++) {
+        for (let i = 0; i < playedcards.length; i++) {
             playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
             playedcardids.push(playedcards[i].id)
         }
