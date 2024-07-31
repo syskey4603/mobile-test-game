@@ -155,11 +155,11 @@ function initialSetup() {
     talon.push(new Card(8, HEART, false, 410, 300, 2))
     talon.push(new Card(9, HEART, false, 420, 300, 3))
     talon.push(new Card(10, HEART, false, 430, 300, 4))
-    table.push(new Card(3, DIAMOND, true, 400, 80, 5))
-    table.push(new Card(4, DIAMOND, true, 300, 80, 6))
-    table.push(new Card(5, DIAMOND, true, 500, 80, 7))
-    table.push(new Card(6, DIAMOND, false, 520, 80, 8))
-    table.push(new Card(7, DIAMOND, false, 510, 80, 9))
+
+    for (let i = 0; i < globalData["table"]["data"]["NumOfCards"]; i++) {
+        table.push(new Card(globalData["table"]["data"]["Rank"], globalData["table"]["data"]["Suit"], globalData["table"]["data"]["Open"], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], globalData["table"]["data"]["Index"]))
+
+    }
 
 
     
