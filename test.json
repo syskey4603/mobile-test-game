@@ -16,6 +16,34 @@
         0,
         0
       ],
+      "Rank": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "Suit": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "Open": [
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "Index": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
       "DependedOn": [
         {
           "index": 0,
