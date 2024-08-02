@@ -1,7 +1,7 @@
 {
   "table": {
     "data": {
-      "NumOfCards": 5,
+      "NumOfTableCards": 5,
       "CardPosition": [
         "400,80",
         "300,80",
@@ -95,11 +95,52 @@
           ]
         }
       ]
-    },
-
-  "NumberOfDeckCards": 3
-  
-  
+    }
+  },
+  "talon": {
+    "NumberOfDeckCards": 3,
+    "Rank": [
+      8,
+      9,
+      10
+    ],
+    "Suit": [
+      2,
+      2,
+      2
+    ],
+    "Open": [
+      false,
+      false,
+      false
+    ],
+    "Index": [
+      2,
+      3,
+      4
+    ],
+    "CardPosition": [
+      "410,300",
+      "420, 300",
+      "430,300"
+    ]
+  },
+  "playedcards": {
+    "NumberOfPlayedCards": 1,
+    "Rank": [
+      2
+    ],
+    "Suit": [
+      1
+    ],
+    "Open": [
+      true
+    ],
+    "Index": [
+      1
+    ],
+    "CardPosition": [
+      "550,300"
+    ]
   }
 }
-

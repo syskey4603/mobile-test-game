@@ -29,7 +29,6 @@ function splitPosVals(vals) {
 }
 
 await fetchData()
-console.log(splitPosVals(globalData["table"]["data"]["CardPosition"][0]))
 
 var config = {
     type: Phaser.AUTO,
@@ -151,10 +150,25 @@ var c;
 var gameWonText
 
 function initialSetup() {
-    playedcards.push(new Card(2, DIAMOND, true, 550, 300, 1))
-    talon.push(new Card(8, HEART, false, 410, 300, 2))
-    talon.push(new Card(9, HEART, false, 420, 300, 3))
-    talon.push(new Card(10, HEART, false, 430, 300, 4))
+    for (let i = 0; i < globalData["playedcards"]["NumberOfPlayedCards"]; i++) {
+        let position = splitPosVals(globalData["playedcards"]["CardPosition"][i]);
+        console.log('Position:', position);
+        console.log('Rank:', globalData["playedcards"]["Rank"][i]);
+        console.log('Suit:', globalData["playedcards"]["Suit"][i]);
+        console.log('Index:', globalData["playedcards"]["Index"][i]);
+        console.log('Open:', globalData["playedcards"]["Open"][i]);
+        
+        playedcards.push(new Card(
+            globalData["playedcards"]["Rank"][i],
+            globalData["playedcards"]["Suit"][i],
+            globalData["playedcards"]["Open"][i],
+            position[0],
+            position[1],
+            globalData["playedcards"]["Index"][i]
+        ));
+    }
+    
+    loadTalon()
     loadTable()
 
 
@@ -162,12 +176,36 @@ function initialSetup() {
     
 }
 
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+  }
+
+function randomValues(positionx, positiony) {
+    let openArray = [true, false]
+    let ValueArray = []
+    ValueArray.push(randInt(1, 13))
+    ValueArray.push(randInt(1, 4))
+    randomOpen = Math.floor(Math.random() * openArray.length);
+    ValueArray.push(openArray[randomOpen])
+    ValueArray.push(positionx)
+    ValueArray.push(positiony)
+    ValueArray.push(randInt(1, 52))
+}
+
+function loadTalon() {
+    for (let i = 0; i < globalData["talon"]["NumberOfDeckCards"]; i++) {
+        let position = splitPosVals(globalData["talon"]["CardPosition"][i]);
+        talon.push(new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], globalData["talon"]["Open"][i], position[0], position[1], globalData["talon"]["Index"][i]))
+    }
+
+}
+
 function loadTable() {
-    
-    for (let i = 0; i < globalData["table"]["data"]["NumOfCards"]; i++) {
+    for (let i = 0; i < globalData["table"]["data"]["NumOfTableCards"]; i++) {
         table.push(new Card(globalData["table"]["data"]["Rank"][i], globalData["table"]["data"]["Suit"][i], globalData["table"]["data"]["Open"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], globalData["table"]["data"]["Index"][i]))
 
     }
+    // add random later
 
 }
 
