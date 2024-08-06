@@ -190,10 +190,13 @@ function randomValues(positionx, positiony) {
     ValueArray.push(positionx)
     ValueArray.push(positiony)
     ValueArray.push(randInt(1, 52))
+    return ValueArray;
 }
 
 function loadTalon() {
     for (let i = 0; i < globalData["talon"]["NumberOfDeckCards"]; i++) {
+
+        
         let position = splitPosVals(globalData["talon"]["CardPosition"][i]);
         talon.push(new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], globalData["talon"]["Open"][i], position[0], position[1], globalData["talon"]["Index"][i]))
     }
