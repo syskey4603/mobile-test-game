@@ -176,12 +176,13 @@ var gameWonText
 function initialSetup() {
     for (let i = 0; i < globalData["playedcards"]["NumberOfPlayedCards"]; i++) {
         let position = splitPosVals(globalData["playedcards"]["CardPosition"][i]);
+        let randomPlayedCard = randomValues(position[0], position[1])
         var CurrentPlayedCard = new Card(
-            globalData["playedcards"]["Rank"][i],
-            globalData["playedcards"]["Suit"][i],
-            position[0],
-            position[1],
-            globalData["playedcards"]["Index"][i]
+            randomPlayedCard[0],
+            randomPlayedCard[1],
+            randomPlayedCard[2],
+            randomPlayedCard[3],
+            randomPlayedCard[4]
         )        
         playedcards.push(CurrentPlayedCard)
     }
@@ -199,24 +200,33 @@ function randInt(min, max) {
   }
 
 function randomValues(positionx, positiony) {
-    let openArray = [true, false]
+    //let openArray = [true, false]
+    //var randomOpen;
     let ValueArray = []
     ValueArray.push(randInt(1, 13))
     ValueArray.push(randInt(1, 4))
-    randomOpen = Math.floor(Math.random() * openArray.length);
-    ValueArray.push(openArray[randomOpen])
+    //randomOpen = Math.floor(Math.random() * openArray.length);
+    //ValueArray.push(openArray[randomOpen])
     ValueArray.push(positionx)
     ValueArray.push(positiony)
-    ValueArray.push(randInt(1, 52))
+    ValueArray.push(randInt(525, 1624))
     return ValueArray;
 }
 
-function loadTalon() {
-    for (let i = 0; i < globalData["talon"]["NumberOfDeckCards"]; i++) {
 
+function loadTalon() {
+    var xpos = 290;
+    var randomVals;
+    for (let i = 0; i < globalData["table"]["data"]["NumberOfDeckCards"]; i++) {
+
+        randomVals = randomValues(xpos,300)
         
-        let position = splitPosVals(globalData["talon"]["CardPosition"][i]);
-        var currentCard = new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], position[0], position[1], globalData["talon"]["Index"][i])
+        var currentCard = new Card(randomVals[0], randomVals[1], randomVals[2], randomVals[3], randomVals[4])
+    
+        //let position = splitPosVals(globalData["talon"]["CardPosition"][i]);
+        //var currentCard = new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], position[0], position[1], globalData["talon"]["Index"][i])
+        
+        xpos+= 10
         currentCard.open = false;
         talon.push(currentCard)
 
@@ -226,7 +236,15 @@ function loadTalon() {
 
 function loadTable() {
     for (let i = 0; i < globalData["table"]["data"]["NumOfTableCards"]; i++) {
-        table.push(new Card(globalData["table"]["data"]["Rank"][i], globalData["table"]["data"]["Suit"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
+        var randVals = randomValues(splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1])
+        console.log(globalData["table"]["data"]["MapSequence"][i])
+        if(globalData["table"]["data"]["MapSequence"][i] < 0) {
+            table.push(new Card(randVals[0], randVals[1], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
+        }
+        else {
+            table.push(new Card(globalData["table"]["data"]["MapSequence"][i]+1, globalData["table"]["data"]["Suit"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
+        }
+        
         console.log(table[i].id + " " + table[i].rank)
 
     }
@@ -236,27 +254,13 @@ function loadTable() {
         table[globalData['table']['data']["DependedOn"][i]["index"]].open = false;
 
     }
-    // add random later
+    // add random and all based on mapsequence for table
 
 }
 
 
 function preload () {
     initialSetup()
-    /*
-    for (let i = 0; i < talon.length; i++) {
-        this.load.image(talon[i].getSpriteName(), talon[i].getSpriteName())
-        
-    }
-    for (i = 0; i < table.length; i++) {
-        this.load.image(table[i].getSpriteName(), table[i].getSpriteName())
-    }
-    for (i = 0; i < playedcards.length; i++) {
-        this.load.image(playedcards[i].getSpriteName(), playedcards[i].getSpriteName())
-    }
-    */
-
-    //c = new Card(1, DIAMOND, true, 1, 1);
 
     for(let j = 0; j < 4; j++) {
 
