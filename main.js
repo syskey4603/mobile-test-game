@@ -10,6 +10,7 @@ var i;
 var j;
 var m;
 var n;
+var valarray;
 
 async function fetchData() {
     try {
@@ -24,7 +25,9 @@ async function fetchData() {
 
 
 function splitPosVals(vals) {
-    return vals.split(',').map(val => Number(val.trim()));
+    vals = vals.replace(/[\(\)]+/g, '');
+    valarray = vals.split(',').map(val => Number(val.trim()));
+    return valarray
 
 }
 
@@ -96,11 +99,13 @@ rankanme[12] = "Q"
 rankanme[13] = "K"
 //create level class and load the json
 class Card {
-constructor (rank, suit, open, positionx, positiony, id) {
+constructor (rank, suit, positionx, positiony, id, cardRotation) {
+    this.dependsOn = [];
     this.id = id;
+    this.cardRotation = cardRotation;
     this.rank = rank;
     this.suit = suit;
-    this.open = open;
+    this.open = true;
     this.positionx = positionx;
     this.positiony = positiony;
 
@@ -131,6 +136,25 @@ constructor (rank, suit, open, positionx, positiony, id) {
 
     }
 
+    getDepth() {
+        if(!this.dependsOn || this.dependsOn.length == 0) {
+            return 100;
+        }
+        else {
+            var lowestDepth = 100
+            var currentDepth = 0;
+            for (i = 0; i < this.dependsOn.length; i++) {
+                currentDepth = table[this.dependsOn[i]].getDepth()
+                if(currentDepth < lowestDepth) {
+                    lowestDepth = lowestDepth
+            
+                }
+            }
+            return lowestDepth
+        }
+
+    }
+
 }
 
 var talon = []
@@ -152,20 +176,14 @@ var gameWonText
 function initialSetup() {
     for (let i = 0; i < globalData["playedcards"]["NumberOfPlayedCards"]; i++) {
         let position = splitPosVals(globalData["playedcards"]["CardPosition"][i]);
-        console.log('Position:', position);
-        console.log('Rank:', globalData["playedcards"]["Rank"][i]);
-        console.log('Suit:', globalData["playedcards"]["Suit"][i]);
-        console.log('Index:', globalData["playedcards"]["Index"][i]);
-        console.log('Open:', globalData["playedcards"]["Open"][i]);
-        
-        playedcards.push(new Card(
+        var CurrentPlayedCard = new Card(
             globalData["playedcards"]["Rank"][i],
             globalData["playedcards"]["Suit"][i],
-            globalData["playedcards"]["Open"][i],
             position[0],
             position[1],
             globalData["playedcards"]["Index"][i]
-        ));
+        )        
+        playedcards.push(CurrentPlayedCard)
     }
     
     loadTalon()
@@ -198,14 +216,24 @@ function loadTalon() {
 
         
         let position = splitPosVals(globalData["talon"]["CardPosition"][i]);
-        talon.push(new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], globalData["talon"]["Open"][i], position[0], position[1], globalData["talon"]["Index"][i]))
+        var currentCard = new Card(globalData["talon"]["Rank"][i], globalData["talon"]["Suit"][i], position[0], position[1], globalData["talon"]["Index"][i])
+        currentCard.open = false;
+        talon.push(currentCard)
+
     }
 
 }
 
 function loadTable() {
     for (let i = 0; i < globalData["table"]["data"]["NumOfTableCards"]; i++) {
-        table.push(new Card(globalData["table"]["data"]["Rank"][i], globalData["table"]["data"]["Suit"][i], globalData["table"]["data"]["Open"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], globalData["table"]["data"]["Index"][i]))
+        table.push(new Card(globalData["table"]["data"]["Rank"][i], globalData["table"]["data"]["Suit"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
+        console.log(table[i].id + " " + table[i].rank)
+
+    }
+
+    for (i = 0; i < globalData["table"]["data"]["DependedOn"].length; i++) {
+        table[globalData['table']['data']["DependedOn"][i]["index"]].dependsOn = globalData['table']['data']["DependedOn"][i]["depends"];
+        table[globalData['table']['data']["DependedOn"][i]["index"]].open = false;
 
     }
     // add random later
@@ -228,7 +256,7 @@ function preload () {
     }
     */
 
-    c = new Card(1, DIAMOND, true, 1, 1);
+    //c = new Card(1, DIAMOND, true, 1, 1);
 
     for(let j = 0; j < 4; j++) {
 
@@ -257,17 +285,17 @@ function preload () {
             talonids.push(talon[i].id)
             
         }
-        for (let i = 0; i < table.length; i++) {
-            tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
+        for (let i = table.length-1; i > -1; i--) {
+            console.log(globalData['table']['data']['CardRotation'][i])
+            tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3).setAngle(globalData['table']['data']['CardRotation'][i]))
 
-            if(table[i].open) {
-                tablesprites[i].setDepth(5555)
-            }
+
                 
             
             tableids.push(table[i].id)
 
         }
+        tablesprites = tablesprites.reverse();
         for (let i = 0; i < playedcards.length; i++) {
             playedcardssprites.push(this.physics.add.sprite(playedcards[i].positionx, playedcards[i].positiony, playedcards[i].getSpriteName()).setInteractive().setScale(0.3, 0.3))
             playedcardids.push(playedcards[i].id)
@@ -275,6 +303,10 @@ function preload () {
 
         for (i = 0; i < tablesprites.length; i++) {
             tablesprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, table[i].id))
+            console.log(table[i].id + " " + table[i].rank)
+            
+
+            tablesprites[i].setDepth(table[i].getDepth())
         }
         for (i = 0; i < talonsprites.length; i++) {
             talonsprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, talon[i].id))
@@ -310,8 +342,14 @@ function preload () {
 
         var tableCardIndex = getcardindex(table, cardid)
         if(tableCardIndex != -1) {
-           
+            if(!table[tableCardIndex].open) {
+                return
+            }
+
+           console.log("table card clicked " + playedcards[playedcards.length-1].rank + " " + table[tableCardIndex].rank + " " + tableCardIndex)
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
+                tablesprites[tableCardIndex].setAngle(0);
+                console.log("matched moving to talon")
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
                 playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
@@ -322,8 +360,9 @@ function preload () {
                 tablesprites.splice(tableCardIndex, 1)
 
             }
+            
 
-            if(!table[tableCardIndex].open) {
+            if(table.length > 0 && !table[tableCardIndex].open) {
                 console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
                 table[tableCardIndex].open = true;
                 console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
