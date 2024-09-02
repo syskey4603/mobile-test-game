@@ -17,7 +17,6 @@ async function fetchData() {
         const response = await fetch('test.json');
         const json = await response.json();
         globalData = json;
-        console.log(globalData)
     } catch (error) {
         console.error('Error fetching JSON:', error);
     }
@@ -237,7 +236,6 @@ function loadTalon() {
 function loadTable() {
     for (let i = 0; i < globalData["table"]["data"]["NumOfTableCards"]; i++) {
         var randVals = randomValues(splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1])
-        console.log(globalData["table"]["data"]["MapSequence"][i])
         if(globalData["table"]["data"]["MapSequence"][i] < 0) {
             table.push(new Card(randVals[0], randVals[1], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
         }
@@ -245,7 +243,7 @@ function loadTable() {
             table.push(new Card(globalData["table"]["data"]["MapSequence"][i]+1, globalData["table"]["data"]["Suit"][i], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[0], splitPosVals(globalData["table"]["data"]["CardPosition"][i])[1], i))
         }
         
-        console.log(table[i].id + " " + table[i].rank)
+       
 
     }
 
@@ -290,7 +288,7 @@ function preload () {
             
         }
         for (let i = table.length-1; i > -1; i--) {
-            console.log(globalData['table']['data']['CardRotation'][i])
+           
             tablesprites.push(this.physics.add.sprite(table[i].positionx, table[i].positiony, table[i].getSpriteName()).setInteractive().setScale(0.3, 0.3).setAngle(globalData['table']['data']['CardRotation'][i]))
 
 
@@ -307,7 +305,7 @@ function preload () {
 
         for (i = 0; i < tablesprites.length; i++) {
             tablesprites[i].on('pointerdown', cardhandlerfunc.bind(false, talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, table[i].id))
-            console.log(table[i].id + " " + table[i].rank)
+           
             
 
             tablesprites[i].setDepth(table[i].getDepth())
@@ -320,7 +318,6 @@ function preload () {
         }
 
     }
-
     
     const cardhandlerfunc = function (talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, cardid) {
         var playedCardIndex = getcardindex(playedcards, cardid)
@@ -330,7 +327,7 @@ function preload () {
 
         var talonCardIndex = getcardindex(talon, cardid)
 
-        if(talonCardIndex != -1) {
+        if(talonCardIndex == talon.length-1) {
             playedcards.push(talon[talonCardIndex])
             playedcards[playedcards.length-1].open = true;
             playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
@@ -350,10 +347,9 @@ function preload () {
                 return
             }
 
-           console.log("table card clicked " + playedcards[playedcards.length-1].rank + " " + table[tableCardIndex].rank + " " + tableCardIndex)
+           
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
                 tablesprites[tableCardIndex].setAngle(0);
-                console.log("matched moving to talon")
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
                 playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
@@ -367,10 +363,7 @@ function preload () {
             
 
             if(table.length > 0 && !table[tableCardIndex].open) {
-                console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
                 table[tableCardIndex].open = true;
-                console.log("Beneath card open: ", table[tableCardIndex].open, " ", table[tableCardIndex].id);
-                console.log(table[tableCardIndex].getSpriteName())
                 tablesprites[tableCardIndex].setTexture(table[tableCardIndex].getSpriteName()).setScale(0.3, 0.3);
                 tablesprites[tableCardIndex].setDepth(5555)
 
