@@ -326,8 +326,13 @@ function preload () {
         }
 
         var talonCardIndex = getcardindex(talon, cardid)
+        if(talonCardIndex != -1) {
+            var talonlengthtemp = talon.length-1
+            console.log("cardindex: " + talonCardIndex)
+            console.log("talon length: " + talonlengthtemp.toString())
+        }
 
-        if(talonCardIndex == talon.length-1) {
+        if(0 < talon.length && talonCardIndex == talon.length-1) {
             playedcards.push(talon[talonCardIndex])
             playedcards[playedcards.length-1].open = true;
             playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
@@ -352,7 +357,7 @@ function preload () {
                 tablesprites[tableCardIndex].setAngle(0);
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
-                playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
+                playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony                
                 table.splice(tableCardIndex, 1)
                 playedcardssprites.push(tablesprites[tableCardIndex])
                 playedcardssprites[playedcardssprites.length-2].disableBody(true, true);
@@ -363,6 +368,7 @@ function preload () {
             
 
             if(table.length > 0 && !table[tableCardIndex].open) {
+                console.log("openning next card:" + tableCardIndex)
                 table[tableCardIndex].open = true;
                 tablesprites[tableCardIndex].setTexture(table[tableCardIndex].getSpriteName()).setScale(0.3, 0.3);
                 tablesprites[tableCardIndex].setDepth(5555)
