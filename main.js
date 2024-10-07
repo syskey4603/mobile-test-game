@@ -11,6 +11,8 @@ var j;
 var m;
 var n;
 var valarray;
+var tableUndoButton;
+var oldCardArray = [];
 
 async function fetchData() {
     try {
@@ -97,6 +99,68 @@ rankanme[11] = "J"
 rankanme[12] = "Q"
 rankanme[13] = "K"
 //create level class and load the json
+
+
+class oldCard {
+    constructor(card, index) {
+        console.log(card.dependsOn)
+        this.dependsOn = card.dependsOn.map((x) => x);
+        this.id = card.id;
+        this.cardRotation = card.cardRotation;
+        this.rank = card.rank;
+        this.suit = card.suit;
+        this.open = true;
+        this.positionx = card.positionx;
+        this.positiony = card.positiony;
+        this.index = index;
+    }
+    
+    getSpriteName() {
+        if(!this.open) {
+            return "assets/backofcard.png"
+        }
+        else {
+            return "assets/" + this.getSuitName() + "_" + this.getRankName() + ".png";
+        }
+    }
+
+    getSuitName() {
+        return suitname[this.suit];
+    }
+
+    getRankName() {
+        return rankanme[this.rank];
+    }
+
+    isNextCard(checkRank) {
+        if(this.rank-1 == checkRank || this.rank+1 == checkRank || (this.rank == 13 && checkRank == 1) || (this.rank == 1 && checkRank == 13)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    getDepth() {
+        if(!this.dependsOn || this.dependsOn.length == 0) {
+            return 100;
+        }
+        else {
+            var lowestDepth = 100
+            var currentDepth = 0;
+            for (i = 0; i < this.dependsOn.length; i++) {
+                currentDepth = table[this.dependsOn[i]].getDepth()
+                if(currentDepth < lowestDepth) {
+                    lowestDepth = lowestDepth
+            
+                }
+            }
+            return lowestDepth
+        }
+
+    }
+}
+
+
 class Card {
 constructor (rank, suit, positionx, positiony, id, cardRotation) {
     this.dependsOn = [];
@@ -249,7 +313,7 @@ function loadTable() {
 
     for (i = 0; i < globalData["table"]["data"]["DependedOn"].length; i++) {
         table[globalData['table']['data']["DependedOn"][i]["index"]].dependsOn = globalData['table']['data']["DependedOn"][i]["depends"];
-        table[globalData['table']['data']["DependedOn"][i]["index"]].open = false;
+        table[globalData['table']['data']["DependedOn"][i]["index"]].open = true;
 
     }
     // add random and all based on mapsequence for table
@@ -274,10 +338,18 @@ function preload () {
     this.load.image("background", "Level Assets/BonusLevel_BG/BG.png")
 
 }
-
+    var undoButton;
     function create () {
-        this.add.image(400, 300, 'background').setScale(0.5, 0.5);
         let textStyle = { font: '96px Arial', fill: '#FFFFFF' };
+        tableUndoButton = this.add.text(this.scale.width/2+200, this.scale.height/2+100, "table undo", textStyle);
+        tableUndoButton.setInteractive();
+        tableUndoButton.on("pointerdown", () => undoTable())
+        tableUndoButton.setDepth(5832588235);
+        undoButton = this.add.text(this.scale.width / 2+200, this.scale.height / 2, 'talon undo', textStyle);
+        undoButton.visible = true;
+        undoButton.setInteractive();
+        undoButton.on('pointerdown', () => undoTalon(playedcards, playedcardssprites));
+        undoButton.setDepth(505089585);
         gameWonText = this.add.text(window.innerWidth / 2, window.innerHeight / 2, 'You Win!', textStyle);
         gameWonText.visible = false;
         gameLostText = this.add.text(window.innerWidth/2, window.innerHeight/2, 'You Lose!', textStyle);
@@ -318,6 +390,46 @@ function preload () {
         }
 
     }
+    function undoTalon(playedcards, playedcardssprites) {
+        if(playedcards.length == 1) {
+            return
+        }
+        talon.push(playedcards[playedcards.length-1])
+        talon[talon.length-1].positionx = talon[talon.length-2].positionx+10
+        playedcards.pop()
+
+        talonsprites.push(playedcardssprites[playedcardssprites.length-1])        
+        playedcardssprites.pop()
+
+        playedcardssprites[playedcardssprites.length-1].enableBody(false, 0, 0, true, true);
+        talonsprites[talonsprites.length-1].setPosition(talon[talon.length-2].positionx+10, talon[talon.length-2].positiony)
+        talonsprites[talonsprites.length-1].setTexture("assets/backofcard.png").setScale(0.3, 0.3)
+    }
+
+    function undoTable() {
+        if (oldCardArray.length == 0) {
+            console.log("no undo")
+            return
+        }
+        console.log(oldCardArray[oldCardArray.length-1].index)
+        console.log(oldCardArray[oldCardArray.length-1].rank)
+        console.log(oldCardArray[oldCardArray.length-1].suit)
+        table.splice(oldCardArray[oldCardArray.length-1].index, 0, oldCardArray[oldCardArray.length-1])
+        console.log(table[oldCardArray[oldCardArray.length-1].index].rank)
+        console.log(table[oldCardArray[oldCardArray.length-1].index].suit)
+
+        tablesprites.splice(oldCardArray[oldCardArray.length-1].index, 0, playedcardssprites[playedcardssprites.length-1])
+        tablesprites[oldCardArray[oldCardArray.length-1].index].setAngle(oldCardArray[oldCardArray.length-1].cardRotation).setScale(0.3, 0.3)
+        playedcardssprites[playedcardssprites.length-2].enableBody(false, 0, 0, true, true);
+        tablesprites[oldCardArray[oldCardArray.length-1].index].setPosition(oldCardArray[oldCardArray.length-1].positionx, oldCardArray[oldCardArray.length-1].positiony)
+        playedcardssprites.pop()
+        playedcards.pop()
+        oldCardArray.pop()
+
+        
+
+
+    }
     
     const cardhandlerfunc = function (talon, playedcards, playedcardssprites, talonsprites, table, tablesprites, tableids, talonids, playedcardids, cardid) {
         var playedCardIndex = getcardindex(playedcards, cardid)
@@ -330,10 +442,12 @@ function preload () {
             var talonlengthtemp = talon.length-1
             console.log("cardindex: " + talonCardIndex)
             console.log("talon length: " + talonlengthtemp.toString())
+            console.log(talon[talonCardIndex])
         }
+        
 
         if(0 < talon.length && talonCardIndex == talon.length-1) {
-            playedcards.push(talon[talonCardIndex])
+            playedcards.push(talon[talon.length-1])
             playedcards[playedcards.length-1].open = true;
             playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
             playedcards[playedcards.length-1].positiony = playedcards[playedcards.length-2].positiony
@@ -347,6 +461,7 @@ function preload () {
         }
 
         var tableCardIndex = getcardindex(table, cardid)
+        
         if(tableCardIndex != -1) {
             if(!table[tableCardIndex].open) {
                 return
@@ -354,6 +469,10 @@ function preload () {
 
            
             if(table[tableCardIndex].isNextCard(playedcards[playedcards.length-1].rank)) {
+                var oldcard = new oldCard(table[tableCardIndex], tableCardIndex)
+                oldCardArray.push(oldcard)
+                console.log(tableCardIndex)
+
                 tablesprites[tableCardIndex].setAngle(0);
                 playedcards.push(table[tableCardIndex])
                 playedcards[playedcards.length-1].positionx = playedcards[playedcards.length-2].positionx
